@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from dio_bank.controllers import auth, account
+from dio_bank.controllers import account, auth, transaction
 from dio_bank.database import database
 
 
@@ -16,6 +16,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title='DIO Bank API', lifespan=lifespan)
 app.include_router(account.router, tags='accounts')
 app.include_router(auth.router, tags=['auth'])
+app.include_router(transaction.router, tags=['transactions'])
 
 
 @app.get('/')
