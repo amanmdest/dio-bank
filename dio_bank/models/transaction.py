@@ -15,7 +15,10 @@ transactions = sa.Table(
     metadata,
     sa.Column('id', sa.Integer, primary_key=True),
     sa.Column(
-        'account_id', sa.Integer, sa.ForeignKey('accounts.id'), nullable=False
+        'account_id',
+        sa.Integer,
+        sa.ForeignKey('accounts.id', ondelete='CASCADE'),
+        nullable=False,
     ),
     sa.Column('transaction', sa.Enum(TransactionType), nullable=False),
     sa.Column('amount', sa.Float, nullable=False),

@@ -1,7 +1,40 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 
+from dio_bank.schemas.transaction import TransactionIn
 from dio_bank.security import login_required
+from dio_bank.services.transaction import TransactionService
+from dio_bank.views.transaction import TransactionOut
 
 router = APIRouter(
     prefix='/transactions', dependencies=[Depends(login_required)]
 )
+services = TransactionService
+
+
+@router.post(
+        '/{account_id}',
+        response_model=TransactionOut,
+        status_code=status.HTTP_201_CREATED
+    )
+async def create_transaction(account_id: int, transaction: TransactionIn):
+    print(**transaction.model_dump())
+    print({**transaction.model_dump(), 'id': await services.create(transaction)})
+
+
+@router.get(
+        '/{account_id}',
+        response_model=TransactionOut,
+        status_code=status.HTTP_200_OK
+    )
+async def read_transaction_by_account_id(account_id: int):
+    return await services.read_by_account_id(account_id)
+
+
+@router.get('/', response_model=TransactionOut, status_code=status.HTTP_200_OK)
+async def read_transactions(transaction: TransactionIn, limit: int, skip: int):
+    return await services.read_all(limit, skip)
+
+
+@router.get('/{id}', response_model=TransactionOut, status_code=status.HTTP_200_OK)
+async def read_transaction_by_id(id: int):
+    return await services.read(id)
