@@ -3,6 +3,7 @@
 
 studies/
 .vscode/
+*.db
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

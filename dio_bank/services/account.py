@@ -3,16 +3,19 @@ from databases.interfaces import Record
 from dio_bank.database import database
 from dio_bank.exceptions import NotFoundAccountError
 from dio_bank.models.account import accounts
-from dio_bank.schemas.account import AccountPut
+from dio_bank.schemas.account import AccountIn, AccountPut
 
 
 class AccountService:
-    async def create(self, account):
+    async def create(self, account: AccountIn) -> None:
         command = accounts.insert().values(
             holder=account.holder,
-            balance=account.balance,
+            balance=account.balance
         )
-        return await database.execute(command)
+        record_id = await database.execute(command)
+        query = accounts.select().where(accounts.c.id == record_id)
+
+        return await database.fetch_one(query)
 
     async def read_all(self, limit: int, skip: int):
         query = accounts.select().limit(limit).offset(skip)
@@ -22,14 +25,23 @@ class AccountService:
         return await self.__get_by_id(id)
 
     async def update(self, account: AccountPut, id: int):
-        query = accounts.select().where(accounts.c.id == id)
-        if not query:
+        data = account.model_dump(exclude_unset=True)
+        if not data:
+            # Se nenhum campo foi enviado para alteração, evita ir ao banco à toa
+            query = accounts.select().where(accounts.c.id == id)
+            db_account = await database.fetch_one(query)
+            if not db_account:
+                raise NotFoundAccountError
+            return db_account
+
+        command = accounts.update().where(accounts.c.id == id).values(data)
+        rows_affected = await database.execute(command)
+
+        if rows_affected == 0:
             raise NotFoundAccountError
 
-        data = account.model_dump(exclude_unset=True)
-        command = accounts.update().where(accounts.c.id == id).values(data)
-
-        return await database.execute(command)
+        query = accounts.select().where(accounts.c.id == id)
+        return await database.fetch_one(query)
 
     async def delete(self, id: int):
         command = accounts.delete(accounts.c.account_id == id)

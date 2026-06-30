@@ -35,7 +35,10 @@ async def not_found_account_exception_handler(request: Request, exc: NotFoundAcc
 
 
 @app.exception_handler(NotFoundTransactionError)
-async def not_found_transaction_exception_handler(request: Request, exc: NotFoundTransactionError):
+async def not_found_transaction_exception_handler(
+    request: Request,
+    exc: NotFoundTransactionError
+):
     return JSONResponse(
         status_code=exc.status_code,
         content={'detail': exc.message}
