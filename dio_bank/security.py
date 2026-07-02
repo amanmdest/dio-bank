@@ -31,7 +31,7 @@ def sign_jwt(user_id: int) -> JWTToken:
         'iss': 'curso@fastapi.com',
         'sub': str(user_id),
         'aud': 'curso-fastapi',
-        'exp': now + (60 * 30),  # 30 minutos
+        'exp': now + (60 * 30),
         'iat': now,
         'nbf': now,
         'jti': uuid4().hex,
@@ -45,7 +45,6 @@ async def decode_jwt(token: str) -> JWTToken | None:
         decoded_token = jwt.decode(
             token, SECRET, audience='curso-fastapi', algorithms=[ALGORITHM]
         )
-        print(decoded_token)
         access_token_obj = AccessToken.model_validate(decoded_token)
 
         # Montando JWTToken com esse objeto
