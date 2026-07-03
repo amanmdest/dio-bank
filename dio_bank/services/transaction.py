@@ -27,9 +27,12 @@ class TransactionService:
             if transaction.amount > account.balance:
                 raise Exception('solde insuffisant')
 
-        data = AccountPut(**{'balance': account.balance - transaction.amount})
-        new_account = await services.update(data, account_id)
-        print(new_account)
+            data = AccountPut(**{'balance': account.balance - transaction.amount})
+
+        if transaction.transaction == 'deposit':
+            data = AccountPut(**{'balance': account.balance + transaction.amount})
+
+        await services.update(data, account_id)
 
         command = transactions.insert().values(
             account_id=account_id,
@@ -55,11 +58,9 @@ class TransactionService:
         return await self.__get_by_id(id)
 
     async def __get_transactions_by_account_id(self, account_id: int) -> list[Record]:
-        query = transactions.select().where(
-            transactions.c.account_id == account_id
-        )
-        print(query)
+        query = transactions.select().where(transactions.c.account_id == account_id)
         accounts = await database.fetch_all(query)
+
         if not accounts:
             raise NotFoundAccountError
         return accounts

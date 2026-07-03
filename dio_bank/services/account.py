@@ -1,5 +1,4 @@
 import sqlalchemy as sa
-
 from databases.interfaces import Record
 
 from dio_bank.database import database

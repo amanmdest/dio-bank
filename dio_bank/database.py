@@ -9,3 +9,6 @@ metadata = sa.MetaData()
 database = databases.Database(DATABASE_URL)
 
 engine = sa.create_engine(DATABASE_URL)
+
+from dio_bank.models.account import accounts
+from dio_bank.models.transaction import transactions

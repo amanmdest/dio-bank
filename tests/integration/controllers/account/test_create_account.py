@@ -10,3 +10,5 @@ async def test_create_account_success(client: AsyncClient, access_token: str):
 
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json()['holder'] == 'Lucado'
+
+

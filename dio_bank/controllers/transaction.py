@@ -6,7 +6,7 @@ from dio_bank.services.transaction import TransactionService
 from dio_bank.views.transaction import TransactionOut
 
 # router = APIRouter(prefix='/transactions')
-router = APIRouter(prefix='/transactions', 
+router = APIRouter(prefix='/transactions',
                    dependencies=[Depends(login_required)])
 
 services = TransactionService()
@@ -23,15 +23,15 @@ async def make_transaction(transaction: TransactionIn, account_id: int):
 
 @router.get(
         '/{account_id}',
-        response_model=TransactionOut,
+        response_model=list[TransactionOut],
         status_code=status.HTTP_200_OK
     )
 async def read_transactions_by_account_id(account_id: int):
     return await services.read_transactions_by_account(account_id)
 
 
-@router.get('/', response_model=TransactionOut, status_code=status.HTTP_200_OK)
-async def read_transactions(limit: int, skip: int):
+@router.get('/', response_model=list[TransactionOut], status_code=status.HTTP_200_OK)
+async def read_transactions(limit: int = 10, skip: int = 0):
     return await services.read_all(limit, skip)
 
 

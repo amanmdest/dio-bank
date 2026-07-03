@@ -4,8 +4,6 @@ from alembic import context
 
 from dio_bank.config import settings
 from dio_bank.database import engine, metadata
-from dio_bank.models.account import accounts
-from dio_bank.models.transaction import transactions
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
