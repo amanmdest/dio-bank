@@ -23,8 +23,32 @@ async def db(request):
 
 
 @pytest_asyncio.fixture
-async def client(db):
-    from dio_bank.app import app
+async def populate_db(db):
+    from dio_bank.schemas.account import AccountIn  # noqa
+    from dio_bank.schemas.transaction import TransactionIn  # noqa
+    from dio_bank.services.account import AccountService  # noqa
+    from dio_bank.services.transaction import TransactionService  # noqa
+
+    transaction_service = TransactionService() 
+    account_service = AccountService() 
+
+    await account_service.create(AccountIn(holder='Joaquim', balance=235.77))
+    await account_service.create(AccountIn(holder='Britney', balance=5000000000))
+    await account_service.create(AccountIn(holder='Vhirishn', balance=2))
+    await transaction_service.make_transaction(
+        TransactionIn(amount=35.77, transaction='withdraw'), 1
+        )
+    await transaction_service.make_transaction(
+        TransactionIn(amount=500, transaction='deposit'), 1
+        )
+    await transaction_service.make_transaction(
+        TransactionIn(amount=3000, transaction='deposit'), 3
+        )
+    
+
+@pytest_asyncio.fixture
+async def client(db, populate_db):
+    from dio_bank.app import app # noqa
 
     transport = ASGITransport(app=app)
     headers = {
@@ -42,16 +66,3 @@ async def access_token(client: AsyncClient):
     response = await client.post('/auth/login', json={'user_id': 1})
 
     return response.json()['access_token']
-
-
-@pytest_asyncio.fixture
-async def dummy_account(db) -> AccountOut:
-    command = accounts.insert().values(
-        holder='aman',
-        balance=777
-    )
-
-    record_id = await database.execute(command)
-    query = accounts.select().where(accounts.c.id == record_id)
-
-    return await database.fetch_one(query)

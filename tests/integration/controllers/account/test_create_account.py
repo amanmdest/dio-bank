@@ -9,6 +9,7 @@ async def test_create_account_success(client: AsyncClient, access_token: str):
     response = await client.post('/accounts/', json=data, headers=headers)
 
     assert response.status_code == status.HTTP_201_CREATED
+    assert response.json()['id'] == 4
     assert response.json()['holder'] == 'Lucado'
 
 

@@ -57,7 +57,9 @@ class TransactionService:
     async def read(self, id: int) -> Record:
         return await self.__get_by_id(id)
 
-    async def __get_transactions_by_account_id(self, account_id: int) -> list[Record]:
+    async def __get_transactions_by_account_id(
+            self, account_id: int
+        ) -> list[Record]:
         query = transactions.select().where(transactions.c.account_id == account_id)
         accounts = await database.fetch_all(query)
 
