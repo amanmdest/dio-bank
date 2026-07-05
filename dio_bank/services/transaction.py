@@ -12,7 +12,7 @@ services = AccountService()
 
 
 class TransactionService:
-    async def make_transaction(
+    async def make_transaction(  # noqa
             self,
             transaction: TransactionIn,
             account_id: int
@@ -27,10 +27,14 @@ class TransactionService:
             if transaction.amount > account.balance:
                 raise Exception('solde insuffisant')
 
-            data = AccountPut(**{'balance': account.balance - transaction.amount})
+            data = AccountPut(
+                **{'balance': account.balance - transaction.amount}
+                )
 
         if transaction.transaction == 'deposit':
-            data = AccountPut(**{'balance': account.balance + transaction.amount})
+            data = AccountPut(
+                **{'balance': account.balance + transaction.amount}
+                )
 
         await services.update(data, account_id)
 
@@ -41,35 +45,41 @@ class TransactionService:
         )
 
         record_id = await database.execute(command)
-        fetch_query = transactions.select().where(transactions.c.id == record_id)
+        fetch_query = transactions.select().where(
+            transactions.c.id == record_id
+            )
 
         return await database.fetch_one(fetch_query)
 
-    async def read_all(
+    async def read_all(  # noqa
             self, limit: int, skip: int
         ) -> list[Record]:
         query = transactions.select().limit(limit).offset(skip)
         return await database.fetch_all(query)
 
-    async def read_transactions_by_account(self, account_id: int) -> list[Record]:
+    async def read_transactions_by_account_id(  # noqa
+            self, account_id: int
+            ) -> list[Record]:
         return await self.__get_transactions_by_account_id(account_id)
 
-    async def read(self, id: int) -> Record:
+    async def read(self, id: int) -> Record:  # noqa
         return await self.__get_by_id(id)
 
-    async def __get_transactions_by_account_id(
+    async def __get_transactions_by_account_id(  # noqa
             self, account_id: int
         ) -> list[Record]:
-        query = transactions.select().where(transactions.c.account_id == account_id)
+        query = transactions.select().where(
+            transactions.c.account_id == account_id
+            )
         accounts = await database.fetch_all(query)
 
         if not accounts:
             raise NotFoundAccountError
         return accounts
 
-    async def __get_by_id(self, id: int) -> Record:
+    async def __get_by_id(self, id: int) -> Record:  # noqa
         query = transactions.select().where(transactions.c.id == id)
-        transaction = database.fetch_one(query)
+        transaction = await database.fetch_one(query)
         if not transaction:
             raise NotFoundTransactionError
         return transaction

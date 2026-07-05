@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     )
 
     database_url: str
+    secret: str
+    algorithm: str
 
 
 settings = Settings()

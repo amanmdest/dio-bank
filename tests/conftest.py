@@ -1,25 +1,32 @@
+import inspect
+
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
-from dio_bank.database import database
 from dio_bank.config import settings
-from dio_bank.views.account import AccountOut
-from dio_bank.models.account import accounts
 
 settings.database_url = 'sqlite:///tests.db'
 
 
 @pytest_asyncio.fixture
 async def db(request):
-    from dio_bank.database import database, engine, metadata
+    from dio_bank.database import database, engine, metadata  # noqa
 
     await database.connect()
     metadata.create_all(engine)
 
     yield database
 
-    await database.disconnect()
-    metadata.drop_all(engine)
+    try:
+        await database.disconnect()
+        metadata.drop_all(engine)
+    finally:
+        # Força o fechamento de todas as conexões pendentes no pool
+        if hasattr(engine, "dispose"):
+            if inspect.iscoroutinefunction(engine.dispose):
+                await engine.dispose()
+            else:
+                engine.dispose()
 
 
 @pytest_asyncio.fixture
@@ -29,11 +36,13 @@ async def populate_db(db):
     from dio_bank.services.account import AccountService  # noqa
     from dio_bank.services.transaction import TransactionService  # noqa
 
-    transaction_service = TransactionService() 
-    account_service = AccountService() 
+    transaction_service = TransactionService()
+    account_service = AccountService()
 
-    await account_service.create(AccountIn(holder='Joaquim', balance=235.77))
-    await account_service.create(AccountIn(holder='Britney', balance=5000000000))
+    await account_service.create(AccountIn(holder='Joaquin', balance=235.77))
+    await account_service.create(
+        AccountIn(holder='Amelie', balance=5000000000)
+        )
     await account_service.create(AccountIn(holder='Vhirishn', balance=2))
     await transaction_service.make_transaction(
         TransactionIn(amount=35.77, transaction='withdraw'), 1
@@ -44,7 +53,7 @@ async def populate_db(db):
     await transaction_service.make_transaction(
         TransactionIn(amount=3000, transaction='deposit'), 3
         )
-    
+
 
 @pytest_asyncio.fixture
 async def client(db, populate_db):

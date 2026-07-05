@@ -4,7 +4,7 @@ from http import HTTPStatus
 class NotFoundAccountError(Exception):
     def __init__(
             self,
-            message: str = 'Account Not Found',
+            message: str = 'Account Not Found.',
             status_code: int = HTTPStatus.NOT_FOUND
         ) -> None:
         super().__init__(message)
@@ -15,7 +15,7 @@ class NotFoundAccountError(Exception):
 class NotFoundTransactionError(Exception):
     def __init__(
             self,
-            message: str = 'Account Not Found',
+            message: str = 'Transaction Not Found.',
             status_code: int = HTTPStatus.NOT_FOUND
         ) -> None:
         # Boa prática: inicializar a classe base Exception

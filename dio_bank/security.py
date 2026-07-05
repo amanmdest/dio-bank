@@ -7,8 +7,10 @@ from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel
 
-SECRET = 'my-password1234'
-ALGORITHM = 'HS256'
+from dio_bank.config import settings
+
+SECRET = settings.secret
+ALGORITHM = settings.algorithm
 
 
 class AccessToken(BaseModel):

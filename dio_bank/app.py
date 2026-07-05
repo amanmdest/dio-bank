@@ -21,13 +21,10 @@ app.include_router(auth.router, tags=['auth'])
 app.include_router(transaction.router, tags=['transactions'])
 
 
-@app.get('/')
-async def read_root():
-    return {'message': 'no céu tem pão?'}
-
-
 @app.exception_handler(NotFoundAccountError)
-async def not_found_account_exception_handler(request: Request, exc: NotFoundAccountError):
+async def not_found_account_exception_handler(
+    request: Request, exc: NotFoundAccountError
+    ):
     return JSONResponse(
         status_code=exc.status_code,
         content={'detail': exc.message}
