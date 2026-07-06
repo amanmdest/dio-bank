@@ -2,9 +2,7 @@ from fastapi import status
 from httpx import AsyncClient
 
 
-async def test_read_accounts_success(
-        client: AsyncClient, access_token: str
-    ):
+async def test_read_accounts_success(client: AsyncClient, access_token: str):
     headers = {'Authorization': f'Bearer {access_token}'}
     response = await client.get('/accounts/', headers=headers)
 
@@ -13,8 +11,8 @@ async def test_read_accounts_success(
 
 
 async def test_read_accounts_with_limit(
-        client: AsyncClient, access_token: str
-    ):
+    client: AsyncClient, access_token: str
+):
     headers = {'Authorization': f'Bearer {access_token}'}
     response = await client.get(
         '/accounts/', params={'limit': 2}, headers=headers

@@ -15,9 +15,7 @@ async def test_read_all_limit(client: AsyncClient, access_token: str):
     headers = {'Authorization': f'Bearer {access_token}'}
 
     response = await client.get(
-        '/transactions/',
-        headers=headers,
-        params={'limit': 1}
+        '/transactions/', headers=headers, params={'limit': 1}
     )
 
     assert response.status_code == status.HTTP_200_OK

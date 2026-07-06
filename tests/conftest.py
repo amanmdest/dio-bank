@@ -22,7 +22,7 @@ async def db(request):
         metadata.drop_all(engine)
     finally:
         # Força o fechamento de todas as conexões pendentes no pool
-        if hasattr(engine, "dispose"):
+        if hasattr(engine, 'dispose'):
             if inspect.iscoroutinefunction(engine.dispose):
                 await engine.dispose()
             else:
@@ -42,31 +42,31 @@ async def populate_db(db):
     await account_service.create(AccountIn(holder='Joaquin', balance=235.77))
     await account_service.create(
         AccountIn(holder='Amelie', balance=5000000000)
-        )
+    )
     await account_service.create(AccountIn(holder='Vhirishn', balance=2))
     await transaction_service.make_transaction(
         TransactionIn(amount=35.77, transaction='withdraw'), 1
-        )
+    )
     await transaction_service.make_transaction(
         TransactionIn(amount=500, transaction='deposit'), 1
-        )
+    )
     await transaction_service.make_transaction(
         TransactionIn(amount=3000, transaction='deposit'), 3
-        )
+    )
 
 
 @pytest_asyncio.fixture
 async def client(db, populate_db):
-    from dio_bank.app import app # noqa
+    from dio_bank.app import app  # noqa
 
     transport = ASGITransport(app=app)
     headers = {
         'Accept': 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
     }
-    async with AsyncClient(base_url='http://test',
-                           transport=transport,
-                           headers=headers) as client:
+    async with AsyncClient(
+        base_url='http://test', transport=transport, headers=headers
+    ) as client:
         yield client
 
 

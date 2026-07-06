@@ -10,8 +10,7 @@ from dio_bank.schemas.account import AccountIn, AccountPut
 class AccountService:
     async def create(self, account: AccountIn) -> None:  # noqa
         command = accounts.insert().values(
-            holder=account.holder,
-            balance=account.balance
+            holder=account.holder, balance=account.balance
         )
         record_id = await database.execute(command)
         query = accounts.select().where(accounts.c.id == record_id)
@@ -40,9 +39,7 @@ class AccountService:
                 raise NotFoundAccountError
             return db_account
 
-        command = accounts.update().where(
-            accounts.c.id == id
-            ).values(data)
+        command = accounts.update().where(accounts.c.id == id).values(data)
         rows_affected = await database.execute(command)
 
         if rows_affected == 0:
@@ -61,8 +58,9 @@ class AccountService:
         return rows_affected
 
     async def count(self, id: int) -> int:  # noqa
-        query = sa.select(sa.func.count(accounts.c.id)
-                          ).where(accounts.c.id == id)
+        query = sa.select(sa.func.count(accounts.c.id)).where(
+            accounts.c.id == id
+        )
         result = await database.execute(query)
         # returns the count integer directly
         return result

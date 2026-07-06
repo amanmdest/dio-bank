@@ -3,15 +3,13 @@ from httpx import AsyncClient
 
 
 async def test_read_transaction_by_id_success(
-        client: AsyncClient,
-        access_token: str
-    ):
+    client: AsyncClient, access_token: str
+):
     transaction_id = 1
     headers = {'Authorization': f'Bearer {access_token}'}
 
     response = await client.get(
-        f'/transactions/{transaction_id}',
-        headers=headers
+        f'/transactions/{transaction_id}', headers=headers
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -21,15 +19,13 @@ async def test_read_transaction_by_id_success(
 
 
 async def test_fail_read_transaction_by_id_not_found(
-        client: AsyncClient,
-        access_token: str
-    ):
+    client: AsyncClient, access_token: str
+):
     transaction_id = 12
     headers = {'Authorization': f'Bearer {access_token}'}
 
     response = await client.get(
-        f'/transactions/{transaction_id}',
-        headers=headers
+        f'/transactions/{transaction_id}', headers=headers
     )
 
     assert response.status_code == status.HTTP_404_NOT_FOUND

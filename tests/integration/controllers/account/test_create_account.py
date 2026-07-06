@@ -14,8 +14,8 @@ async def test_create_account_success(client: AsyncClient, access_token: str):
 
 
 async def test_fail_create_account_missing_field(
-        client: AsyncClient, access_token: str
-    ):
+    client: AsyncClient, access_token: str
+):
     headers = {'Authorization': f'Bearer {access_token}'}
     data = {'holder': 'Lucado'}
 

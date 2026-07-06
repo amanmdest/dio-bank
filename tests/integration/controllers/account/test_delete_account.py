@@ -13,9 +13,8 @@ async def test_delete_account_success(client: AsyncClient, access_token: str):
 
 
 async def test_fail_delete_account_not_found(
-        client: AsyncClient,
-        access_token: str
-    ):
+    client: AsyncClient, access_token: str
+):
     headers = {'Authorization': f'Bearer {access_token}'}
 
     response = await client.delete(f'/accounts/{6}', headers=headers)
@@ -27,13 +26,11 @@ async def test_fail_delete_account_not_found(
 
 
 async def test_fail_delete_account_unauthorized(
-        client: AsyncClient,
-        access_token: str
-    ):
+    client: AsyncClient, access_token: str
+):
     response = await client.delete(f'/accounts/{1}')
     response_read_all = await client.get(
-        '/accounts/',
-        headers={'Authorization': f'Bearer {access_token}'}
+        '/accounts/', headers={'Authorization': f'Bearer {access_token}'}
     )
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED

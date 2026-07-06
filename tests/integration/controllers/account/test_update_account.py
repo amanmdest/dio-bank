@@ -2,17 +2,13 @@ from fastapi import status
 from httpx import AsyncClient
 
 
-async def test_update_account(
-        client: AsyncClient,
-        access_token: str
-    ):
+async def test_update_account(client: AsyncClient, access_token: str):
     account_id = 2
     headers = {'Authorization': f'Bearer {access_token}'}
     data = {'holder': 'Phoenix', 'balance': 777}
 
     response = await client.put(
-        f'accounts/{account_id}',
-        json=data, headers=headers
+        f'accounts/{account_id}', json=data, headers=headers
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -21,8 +17,8 @@ async def test_update_account(
 
 
 async def test_fail_update_account_not_found(
-        client: AsyncClient, access_token: str
-    ):
+    client: AsyncClient, access_token: str
+):
     account_id = 22
     headers = {'Authorization': f'Bearer {access_token}'}
     data = {'holder': 'Phoenix', 'balance': 777}
@@ -42,6 +38,4 @@ async def test_fail_update_account_unauthorized(client: AsyncClient):
     response = await client.put(f'accounts/{account_id}', json=data)
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    assert response.json() == {
-        'detail': 'Invalid authorization code.'
-    }
+    assert response.json() == {'detail': 'Invalid authorization code.'}
